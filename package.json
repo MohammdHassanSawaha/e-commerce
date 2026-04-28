@@ -1,0 +1,27 @@
+{
+  "name": "e-commerce",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "building an e-commerce website",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MohammdHassanSawaha/e-commerce.git"
+  },
+  "author": "Mohammad Hassan Sawaha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MohammdHassanSawaha/e-commerce/issues"
+  },
+  "homepage": "https://github.com/MohammdHassanSawaha/e-commerce#readme"
+}
