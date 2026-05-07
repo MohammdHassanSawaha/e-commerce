@@ -13,10 +13,16 @@ router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
 
+// futrue work forget password
+
+
+
+// middleware routes (already signed in users)
+
+
 
 // from here we must add restrict to admin in future : 
-
-
+router.use(authController.restrictToAdmin);
 
 router
     .route('/')

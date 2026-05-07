@@ -103,3 +103,13 @@ export const logout = (req, res) =>
     });
     res.status(200).json({ status: 'success' });
 }
+
+
+
+// restrictTo 
+export const restrictToAdmin = (req, res, next) =>
+{
+    if (req.user?.role !== 'admin')
+        return res.status(403).json({ error: 'Admins only' });
+    next();
+};
