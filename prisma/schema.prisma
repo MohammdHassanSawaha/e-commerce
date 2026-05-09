@@ -12,6 +12,9 @@ model User {
   name          String   @db.VarChar(255)
   created_at    DateTime @default(now()) @db.Timestamptz(6)
   password_hash String   @db.VarChar(255)
+  passwordChangedAt   DateTime?
+  passwordResetToken  String?
+  passwordResetExpires DateTime?
   role          Role     @default(customer)
   updated_at    DateTime @updatedAt @db.Timestamptz(6)
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

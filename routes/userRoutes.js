@@ -18,10 +18,7 @@ router.get('/logout', authController.logout);
 
 
 // middleware routes (already signed in users)
-
-
-
-// from here we must add restrict to admin in future : 
+router.use(authController.protect);
 router.use(authController.restrictToAdmin);
 
 router

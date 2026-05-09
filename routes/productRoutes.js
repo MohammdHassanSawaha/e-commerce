@@ -4,6 +4,7 @@ import * as authController from '../controllers/authController.js';
 
 const router = express.Router();
 
+router.use(authController.protect);
 router.use(authController.restrictToAdmin);
 
 router.post('/category/:categoryId', productController.createProduct);

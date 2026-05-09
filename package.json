@@ -5,10 +5,12 @@
   "description": "building an e-commerce website",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon --exec tsx app.js",
-    "start": "tsx app.js",
+    "dev": "nodemon --exec tsx server.js",
+    "start": "tsx server.js",
     "seed": "tsx prisma/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "node scripts/prismaTestReset.js",
+    "test": "set NODE_ENV=test && set DOTENV_CONFIG_PATH=.env.test && vitest run",
+    "test:watch": "set NODE_ENV=test && set DOTENV_CONFIG_PATH=.env.test && vitest"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -24,8 +26,10 @@
     "dotenv": "^17.4.2",
     "nodemon": "^3.1.14",
     "prisma": "^7.8.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^1.6.1"
   },
   "repository": {
     "type": "git",

@@ -49,6 +49,13 @@ export const updateUser = catchAsyn(async (req, res, next) =>
     const data = req.body;
     if (!id || !data)
         return next(new appError('something went wrong, correct you info', 404));
+    if (!uuidRegex.test(id))
+        return next(new appError('Invalid id format', 400));
+    const existing = await prisma.user.findUnique({
+        where: { id: id },
+    });
+    if (!existing)
+        return next(new appError('No user found', 404));
     const user = await prisma.user.update({
         where: { id: id },
         data: data,
@@ -67,6 +74,13 @@ export const deleteUser = catchAsyn(async (req, res, next) =>
     const { id } = req.params;
     if (!id)
         return next(new appError('provide the id', 404));
+    if (!uuidRegex.test(id))
+        return next(new appError('Invalid id format', 400));
+    const existing = await prisma.user.findUnique({
+        where: { id: id },
+    });
+    if (!existing)
+        return next(new appError('No user found', 404));
     const deletedUser = await prisma.user.delete({
         where: {
             id: id,

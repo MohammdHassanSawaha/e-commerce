@@ -11,8 +11,11 @@ router.route('/')
 
 //! from here we must add auth + restrict to admin 
 
-router.post('/', categoryController.createCategory);
+router.use(authController.restrictToAdmin);
+router.use(authController.protect)
 
+
+router.post('/', categoryController.createCategory);
 
 router.route('/:id')
     .put(categoryController.updateCategory)
