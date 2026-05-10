@@ -8,6 +8,25 @@ import { promisify } from "util";
 
 const { prisma } = db;
 
+const signToken = (user) =>
+    jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
+const createSendToken = (user, statusCode, res, payload) =>
+{
+    const token = signToken(user);
+    res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000
+    });
+    res.status(statusCode).json(payload);
+};
+
 
 // signup
 export const signup = catchAsync(async (req, res, next) =>
@@ -37,21 +56,7 @@ export const signup = catchAsync(async (req, res, next) =>
             password_hash: hashedPassword,
         },
     });
-    const token = jwt.sign(
-        { id: newUser.id, email: newUser.email },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
-
-    // Set cookie
-    res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: false, // true in production with HTTPS
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000
-    });
-
-    res.status(201).json({
+    createSendToken(newUser, 201, res, {
         message: "Signup successful",
         user: { id: newUser.id, email: newUser.email }
     });
@@ -80,18 +85,7 @@ export const login = catchAsync(async (req, res, next) =>
     {
         return res.status(400).json({ message: "Invalid credentials" });
     }
-    const token = jwt.sign(
-        { id: find.id, email: find.email },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
-    res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000
-    });
-    res.json({ message: "Login successful" });
+    createSendToken(find, 200, res, { message: "Login successful" });
 });
 
 
@@ -104,6 +98,44 @@ export const logout = (req, res) =>
     });
     res.status(200).json({ status: 'success' });
 }
+
+
+// update password
+export const updatePassword = catchAsync(async (req, res, next) =>
+{
+    const { passwordCurrent, password, confirmPassword } = req.body;
+    if (!passwordCurrent || !password || !confirmPassword)
+    {
+        return next(new appError('passwordCurrent password confirmPassword must exist', 400));
+    }
+    if (password !== confirmPassword)
+        return next(new appError('password and confirmPassword not equal', 400));
+    if (password.length < 7)
+        return next(new appError('password is too short', 400));
+
+    const user = await prisma.user.findUnique({
+        where: { id: req.user.id }
+    });
+    if (!user)
+        return next(new appError('User not found', 404));
+
+    const isMatch = await bcryptjs.compare(passwordCurrent, user.password_hash);
+    if (!isMatch)
+    {
+        return next(new appError('Your current password is wrong.', 401));
+    }
+
+    const hashedPassword = await bcryptjs.hash(password, 16);
+    const updatedUser = await prisma.user.update({
+        where: { id: req.user.id },
+        data: {
+            password_hash: hashedPassword,
+            passwordChangedAt: new Date()
+        }
+    });
+
+    createSendToken(updatedUser, 200, res, { message: 'Password updated successfully' });
+});
 
 
 
@@ -156,7 +188,7 @@ export const protect = catchAsync(async (req, res, next) =>
     }
 
     // 2) Verification token
-    // because it's prmise (promisify)
+    // because it's  a promise (promisify)
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
 
     // 3) Check if user still exists

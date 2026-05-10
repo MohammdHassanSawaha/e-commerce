@@ -13,12 +13,17 @@ router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
 
-// futrue work forget password
+// futrue work forget password + update password
 
 
-
-// middleware routes (already signed in users)
+//* protect all routes from here
 router.use(authController.protect);
+router.patch('/updateMyPassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUser);
+
+//? router.delete('/deleteMe', userController.deleteMe);
+
+//^ only admins
 router.use(authController.restrictToAdmin);
 
 router

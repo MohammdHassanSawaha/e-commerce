@@ -6,6 +6,12 @@ import appError from './../utils/appError.js';
 const { prisma } = db;
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+export const getMe = (req, res, next) =>
+{
+    req.params.id = req.user.id;
+    next();
+};
+
 // getAllUsers 
 export const getAllUsers = catchAsyn(async (req, res, next) =>
 {
@@ -21,7 +27,7 @@ export const getAllUsers = catchAsyn(async (req, res, next) =>
 // getUser
 export const getUser = catchAsyn(async (req, res, next) => 
 {
-    const id = req.params.id;
+    const { id } = req.params;
     if (!id)
         return next(new appError('No id found', 404));
     if (!uuidRegex.test(id))
