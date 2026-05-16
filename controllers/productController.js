@@ -7,6 +7,25 @@ import appError from './../utils/appError.js';
 const { prisma } = db;
 
 
+export const getProductById = catchAsyn(async (req, res, next) =>
+{
+	const { id } = req.params;
+	if (!id)
+		return next(new appError('please provide product id', 404));
+	const product = await prisma.product.findUnique({
+		where: { id: id }
+	});
+
+	if (!product)
+		return next(new appError('product not found', 404));
+
+	res.status(200).json({
+		status: 'success',
+		data: product,
+	});
+});
+
+
 export const createProduct = catchAsyn(async (req, res, next) =>
 {
 	const { categoryId } = req.params;

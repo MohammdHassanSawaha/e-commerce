@@ -11,7 +11,7 @@ router.route('/')
 
 //! from here we must add auth + restrict to admin 
 
-router.use(authController.restrictToAdmin);
+// router.use(authController.restrictToAdmin);
 router.use(authController.protect)
 
 

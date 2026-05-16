@@ -13,7 +13,7 @@ router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
 
-// futrue work forget password + update password
+// futrue work forget password 
 
 
 //* protect all routes from here
