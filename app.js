@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import userRouter from './routes/userRoutes.js';
 import categoryRouter from './routes/categoryRoutes.js';
 import productRouter from './routes/productRoutes.js';
+import orderRouter from './routes/orderRoutes.js';
 
 
 const app = express();
@@ -16,6 +17,8 @@ app.use(cookieParser());
 app.use('/users', userRouter);
 app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
+app.use('/orders', orderRouter);
+
 
 // simple error handler for appError and Prisma errors
 app.use((err, req, res, next) =>
