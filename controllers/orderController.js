@@ -109,3 +109,4 @@ export const getOrderStatus = catchAsync(async (req, res, next) =>
         data: { id: order.id, status: order.status },
     });
 });
+

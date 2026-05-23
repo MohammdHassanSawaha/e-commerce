@@ -6,6 +6,35 @@ import appError from './../utils/appError.js';
 
 const { prisma } = db;
 
+const DEFAULT_PAGE_SIZE = 20;
+
+
+export const getProducts = catchAsyn(async (req, res, next) =>
+{
+	const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+	const skip = (page - 1) * DEFAULT_PAGE_SIZE;
+
+	const [total, products] = await Promise.all([
+		prisma.product.count(),
+		prisma.product.findMany({
+			skip,
+			take: DEFAULT_PAGE_SIZE,
+			orderBy: { createdAt: 'desc' }
+		})
+	]);
+
+	res.status(200).json({
+		status: 'success',
+		data: products,
+		meta: {
+			page,
+			perPage: DEFAULT_PAGE_SIZE,
+			total,
+			totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE)
+		}
+	});
+});
+
 
 export const getProductById = catchAsyn(async (req, res, next) =>
 {

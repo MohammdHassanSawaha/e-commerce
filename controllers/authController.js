@@ -5,6 +5,8 @@ import appError from './../utils/appError.js';
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import { promisify } from "util";
+import { rateLimit } from 'express-rate-limit'
+
 
 const { prisma } = db;
 
@@ -26,6 +28,13 @@ const createSendToken = (user, statusCode, res, payload) =>
     });
     res.status(statusCode).json(payload);
 };
+
+
+export const loginLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10-minute window
+    max: 10, // Start blocking after 10 failed attempts
+    message: 'Too many failed login attempts. Please try again after 10 minutes.',
+});
 
 
 // signup
@@ -69,7 +78,10 @@ export const login = catchAsync(async (req, res, next) =>
 {
     const { email, password } = req.body;
     if (!email || !password)
+    {
+        req.rateLimit.increment();
         return next(new appError(`email and password must exists`), 404);
+    }
     const find = await prisma.user.findUnique(
         {
             where:
@@ -79,12 +91,19 @@ export const login = catchAsync(async (req, res, next) =>
         }
     )
     if (!find)
+    {
+        req.rateLimit.increment();
         return next(new appError(`No user found with this email`), 404);
+    }
     const isMatch = await bcryptjs.compare(password, find.password_hash);
     if (!isMatch)
     {
+        req.rateLimit.increment();
         return res.status(400).json({ message: "Invalid credentials" });
     }
+
+    req.rateLimit.reset();
+
     createSendToken(find, 200, res, { message: "Login successful" });
 });
 

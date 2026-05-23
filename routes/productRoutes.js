@@ -5,9 +5,7 @@ import * as authController from '../controllers/authController.js';
 const router = express.Router();
 
 
-//~ get products 20 per page. 
-
-
+router.get('/', productController.getProducts);
 router.get('/:id', productController.getProductById);
 
 router.use(authController.protect);

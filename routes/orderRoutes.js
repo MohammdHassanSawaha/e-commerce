@@ -5,7 +5,7 @@ import * as orderController from './../controllers/orderController.js';
 
 const router = express.Router();
 
-app.use(authController.protect)
+router.use(authController.protect)
 
 router.route('/')
     .post(orderController.createOrder)
@@ -13,3 +13,5 @@ router.route('/')
 
 router.get('/:id', orderController.getOrder);
 router.get('/:id/status', orderController.getOrderStatus);
+
+export default router;
