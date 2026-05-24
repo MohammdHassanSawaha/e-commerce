@@ -29,7 +29,7 @@ export const createOrder = catchAsync(async (req, res, next) =>
     );
     const order = await prisma.order.create({
         data: {
-            id: req.user.id,
+            userId: req.user.id,
             status: "pending",
             total,
             items: {
@@ -57,7 +57,7 @@ export const getAllOrders = catchAsync(async (req, res, next) =>
         return next(new appError("user id is required", 401));
     }
     const orders = await prisma.order.findMany({
-        where: { id: id },
+        where: { userId: id },
         include: { items: true },
         orderBy: { createdAt: "desc" },
     });

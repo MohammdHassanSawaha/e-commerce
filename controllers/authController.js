@@ -80,7 +80,7 @@ export const login = catchAsync(async (req, res, next) =>
     if (!email || !password)
     {
         req.rateLimit.increment();
-        return next(new appError(`email and password must exists`), 404);
+        return next(new appError(`email and password must exists`, 404));
     }
     const find = await prisma.user.findUnique(
         {
@@ -93,7 +93,7 @@ export const login = catchAsync(async (req, res, next) =>
     if (!find)
     {
         req.rateLimit.increment();
-        return next(new appError(`No user found with this email`), 404);
+        return next(new appError(`No user found with this email`, 404));
     }
     const isMatch = await bcryptjs.compare(password, find.password_hash);
     if (!isMatch)
