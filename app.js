@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import helmet from 'helmet'
 import { rateLimit } from 'express-rate-limit'
 import { xss } from 'express-xss-sanitizer';
+import cors from 'cors';
 import userRouter from './routes/userRoutes.js';
 import categoryRouter from './routes/categoryRoutes.js';
 import productRouter from './routes/productRoutes.js';
@@ -22,6 +23,11 @@ app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 app.use(limiter);
 app.use(xss())
+app.use(cors({
+	origin: 'https://localhost:5000',
+	methods: ['PUT', 'GET'],
+}))
+
 
 // routes
 app.use('/users', userRouter);
